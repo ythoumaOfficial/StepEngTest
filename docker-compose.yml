@@ -13,19 +13,24 @@ services:
 
 
   postgres:
-    image: postgres:latest
+    image: postgres:10.5
     container_name: postgres
     hostname: postgres
+    restart: always
     ports:
       - 5432:5432
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: admin
-      POSTGRES_DB: MoviesDB
+    environment: 
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=postgres
+    logging:
+      options:
+        max-size: 10m
+        max-file: "3"
     volumes:
-      - ./moviesDB.sql:/docker-entrypoint-initdb.d/moviesDB.sql
-      - postgres-data:/var/lib/postgresql/data
-    restart: unless-stopped
+      - ./postgres-data:/var/lib/postgresql/data
+      # copy the sql script to create tables and fill data
+      - ./sql/create_tables.sql:/docker-entrypoint-initdb.d/create_tables.sql
 
   pgadmin:
     image: dpage/pgadmin4
